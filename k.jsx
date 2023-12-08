@@ -122,6 +122,10 @@ function SignUpForm(props) {
 
 // Define a custom component for the main app
 function App() {
+  // Use state hooks to store the user data and the error message
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+
   // Define a function to call the login API
   const login = (username, password) => {
     // Use fetch to send a POST request to the login endpoint
@@ -136,16 +140,18 @@ function App() {
       .then((data) => {
         // Check if the login was successful
         if (data.success) {
-          // Show a success message
-          alert("Login successful");
+          // Set the user data to the state
+          setUser(data.user);
+          // Clear the error message
+          setError(null);
         } else {
-          // Show an error message
-          alert(data.message);
+          // Set the error message to the state
+          setError(data.message);
         }
       })
       .catch((error) => {
-        // Show an error message
-        alert(error.message);
+        // Set the error message to the state
+        setError(error.message);
       });
   };
 
@@ -163,22 +169,24 @@ function App() {
       .then((data) => {
         // Check if the sign-up was successful
         if (data.success) {
-          // Show a success message
-          alert("Sign up successful");
+          // Set the user data to the state
+          setUser(data.user);
+          // Clear the error message
+          setError(null);
         } else {
-          // Show an error message
-          alert(data.message);
+          // Set the error message to the state
+          setError(data.message);
         }
       })
       .catch((error) => {
-        // Show an error message
-        alert(error.message);
+        // Set the error message to the state
+        setError(error.message);
       });
   };
 
-  // Return the JSX code for the main app
-  return (
-    <Container maxWidth="md" style={{ marginTop: 20 }}>
+  // Define a function to render the login and sign-up forms
+  const renderForms = () => {
+    return (
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <LoginForm login={login} />
@@ -187,6 +195,47 @@ function App() {
           <SignUpForm signUp={signUp} />
         </Grid>
       </Grid>
+    );
+  };
+
+  // Define a function to render the user profile
+  const renderProfile = () => {
+    return (
+      <Paper elevation={3} style={{ padding: 20 }}>
+        <Typography variant="h4" align="center">
+          Welcome, {user.username}
+        </Typography>
+        <Typography variant="h6" align="center">
+          Your email is {user.email}
+        </Typography>
+        <Button
+          variant="contained"
+          color="secondary"
+          fullWidth
+          onClick={() => setUser(null)}
+        >
+          Log Out
+        </Button>
+      </Paper>
+    );
+  };
+
+  // Define a function to render the error message
+  const renderError = () => {
+    return (
+      <Paper elevation={3} style={{ padding: 20, backgroundColor: "#fdd" }}>
+        <Typography variant="h6" align="center" color="error">
+          {error}
+        </Typography>
+      </Paper>
+    );
+  };
+
+  // Return the JSX code for the main app
+  return (
+    <Container maxWidth="md" style={{ marginTop: 20 }}>
+      {user ? renderProfile() : renderForms()}
+      {error && renderError()}
     </Container>
   );
 }
